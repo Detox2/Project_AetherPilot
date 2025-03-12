@@ -5,6 +5,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from bs4 import BeautifulSoup
 from tavily import TavilyClient
+import .env
 
 from prompts.tools.tools import get_tool_descriptions_for_mode
 from prompts.sections.tool_use import getSharedToolUseSection
@@ -14,12 +15,12 @@ from prompts.sections.noToolsUsed import get_no_tools_used_section
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-telegram_token = "7173225456:AAF6i7RjHNZ-yfXfBufJGVYQuDosBFYfYNM"
-openrouter_api_key = "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"
+telegram_token = TELEGRAM_TOKEN
+openrouter_api_key = OPENROUTER_KEY
 openrouter_base_url = "https://openrouter.ai/api/v1"
 openrouter_model = "anthropic/claude-3.7-sonnet"
 openrouter_temperature = 0.5
-tavily_api_key = "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"
+tavily_api_key = TAVILY_KEY
 conversation_history = []
 
 model = ChatOpenAI(api_key=openrouter_api_key, base_url=openrouter_base_url,
