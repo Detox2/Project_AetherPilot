@@ -8,6 +8,10 @@ from tavily import TavilyClient
 from dotenv import load_dotenv
 import os
 
+from prompts.tools.check_rom import handle_check_game_folder
+from prompts.tools.open_emulator import handle_run_emu
+from prompts.tools.run_game import handle_run_game
+
 load_dotenv()  # This will load from the .env file in the current directory
 
 
@@ -127,7 +131,10 @@ async def extract_tool_response(response: str) -> tuple[str, bool]:
         "attempt_completion": handle_attempt_completion,
         "ask_followup_question": handle_ask_followup_question,
         "web_search": handle_web_search,
-        "download_url": handle_download_tool
+        "download_url": handle_download_tool,
+        "run_emu": handle_run_emu,
+        "run_game": handle_run_game,
+        "check_rom": handle_check_game_folder
     }
 
     # Iterate over all tags and call the corresponding handler if available
