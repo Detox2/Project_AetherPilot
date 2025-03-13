@@ -5,8 +5,13 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from bs4 import BeautifulSoup
 from tavily import TavilyClient
-import .env
+from dotenv import load_dotenv
+import os
 
+load_dotenv()  # This will load from the .env file in the current directory
+
+
+from prompts.tools.emu_download import handle_download_tool
 from prompts.tools.tools import get_tool_descriptions_for_mode
 from prompts.sections.tool_use import getSharedToolUseSection
 from prompts.sections.tool_use_guidelines import getToolUseGuidelinesSection
@@ -15,12 +20,12 @@ from prompts.sections.noToolsUsed import get_no_tools_used_section
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-telegram_token = TELEGRAM_TOKEN
-openrouter_api_key = OPENROUTER_KEY
+telegram_token = os.getenv("TELEGRAM_TOKEN")
+openrouter_api_key = os.getenv("OPENROUTER_KEY")
 openrouter_base_url = "https://openrouter.ai/api/v1"
 openrouter_model = "anthropic/claude-3.7-sonnet"
 openrouter_temperature = 0.5
-tavily_api_key = TAVILY_KEY
+tavily_api_key = os.getenv("TAVILY_KEY")
 conversation_history = []
 
 model = ChatOpenAI(api_key=openrouter_api_key, base_url=openrouter_base_url,
@@ -35,7 +40,7 @@ async def echo(update: Update, context: CallbackContext) -> None:
     logging.info(f'User message: {update.message.text}')
 
     # Loop until isFinished is true or maximum iterations reached
-    max_iterations = 3
+    max_iterations = 30
     iterations = 0
     isFinished = False
     isToolUsed = False
@@ -43,7 +48,7 @@ async def echo(update: Update, context: CallbackContext) -> None:
     while not isFinished and iterations < max_iterations:
         next_step = await handle_message(update.message.text if not isToolUsed else tool_response, isToolUsed)
         logging.info(f"Next step: {next_step}")
-        await update.message.reply_text(next_step) # This can be removed
+        # Debug message removed
         tool_response, isFinished = await extract_tool_response(next_step)
         isToolUsed = True
         iterations += 1
@@ -122,6 +127,7 @@ async def extract_tool_response(response: str) -> tuple[str, bool]:
         "attempt_completion": handle_attempt_completion,
         "ask_followup_question": handle_ask_followup_question,
         "web_search": handle_web_search,
+        "download_url": handle_download_tool
     }
 
     # Iterate over all tags and call the corresponding handler if available
@@ -139,16 +145,16 @@ async def extract_tool_response(response: str) -> tuple[str, bool]:
 
 def manage_system_message() -> str:
     return f"""
-You are a professional topic researcher.
-You are given a message from user.
-And you got those tools to help you to accomplish the task:
-{get_tool_descriptions_for_mode("default", False)}
+You are a professional gamer and knows how to pirate games online. Doing research and using your knowledge you can download and install games as well as find emulators for it
+
+You have the following tools that can help you accomplish research tasks:
+{get_tool_descriptions_for_mode("default")}
 {getSharedToolUseSection()}
 {getToolUseGuidelinesSection()}
 {getObjectiveSection()}
 
 Always return the response in XML-style tags, and ensure that all content is enclosed within appropriate XML tags.
-Your final goal is to return short and concise research results to the user.
+Your final goal is to return short and concise research results to this user.
 """
 
 
@@ -160,7 +166,7 @@ async def handle_message(message: str, tools: bool = False) -> str:
         HumanMessage(
             content=f"Tools result: {message} \n\n The tools have been successfully executed. You can think about next step and proceed." if tools else message)
     ]
-    logging.info(f"Messages: {messages}")
+    # logging.info(f"Messages: {messages}")
     response = model.invoke(messages)
 
     if tools:

@@ -3,17 +3,21 @@ from typing import Callable, Dict, Optional
 from prompts.tools.ask_followup_question import get_ask_followup_question_description
 from prompts.tools.attempt_completion import get_attempt_completion_description
 from prompts.tools.web_search import get_web_search_description
+from prompts.tools.emu_download import get_download_tool_description
+from prompts.tools.screenshot import get_screenshot_description
 
 # Dictionary mapping tool names to their description functions
 TOOL_DESCRIPTION_MAP: Dict[str, Callable] = {
     "ask_followup_question": get_ask_followup_question_description,
     "attempt_completion": get_attempt_completion_description,
     "web_search": get_web_search_description,
+    "download_url": get_download_tool_description,
+    "screenshot": get_screenshot_description
 }
 
 # Always available tools
 ALWAYS_AVAILABLE_TOOLS = {"attempt_completion",
-                          "ask_followup_question", "web_search"}
+                          "ask_followup_question", "web_search", "download_url", "screenshot"}
 
 # Sample tool groups (this can be loaded dynamically)
 TOOL_GROUPS = {
