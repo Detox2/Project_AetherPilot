@@ -4,7 +4,7 @@ import time
 def get_emu_description() -> str:
     return f"""
 ## run_emu
-Description: This tool **starts BizHawk** if it is not running and returns a structured result.
+Description: This tool **starts BizHawk Emulator** if it is not running and returns a structured result. This is so that the game can be launched
 
 ### Usage Example:
 #### ✅ If BizHawk successfully started
@@ -31,7 +31,7 @@ def handle_run_emu(tag) -> str:
         pg.write("EmuHawk", interval=0.05)
         time.sleep(0.5)
         pg.press("enter")
-        time.sleep(20)
+        time.sleep(10)
 
         # If we got here without an error, assume success
         return "success"
