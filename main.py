@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import os
 
 from prompts.tools.check_rom import handle_check_game_folder
+from prompts.tools.movement import handle_move
 from prompts.tools.open_emulator import handle_run_emu
 from prompts.tools.run_game import handle_run_game
 from prompts.tools.screenshot import handle_screenshot
@@ -136,7 +137,8 @@ async def extract_tool_response(response: str) -> tuple[str, bool]:
         "run_emu": handle_run_emu,
         "run_game": handle_run_game,
         "check_rom": handle_check_game_folder,
-        "screenshot": handle_screenshot
+        "screenshot": handle_screenshot,
+        "movement": handle_move
     }
 
     # Iterate over all tags and call the corresponding handler if available
